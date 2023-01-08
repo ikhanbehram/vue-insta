@@ -1,13 +1,18 @@
 <script setup>
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 import Container from '../layouts/Container.vue';
 import { ref } from 'vue';
 import AuthModal from './AuthModal.vue';
 
 const searchUserName = ref('');
 const isAuthenticated = ref(false);
-
-const onSearch = () => {};
+const router = useRouter();
+const onSearch = () => {
+	if (searchUserName.value) {
+		router.push(`/profile/${searchUserName.value}`);
+		searchUserName.value = "";
+	}
+};
 </script>
 
 <template>
@@ -24,12 +29,12 @@ const onSearch = () => {};
 					/>
 				</div>
 				<div class="left-content" v-if="!isAuthenticated">
-					<AuthModal :isLogin="false"/>
-					<AuthModal :isLogin="true"/>
+					<AuthModal :isLogin="false" />
+					<AuthModal :isLogin="true" />
 				</div>
 				<div class="left-content" v-else>
-					<a-button type="primary">Profile</a-button>				
-					<a-button type="primary" ghost>Logout</a-button>				
+					<a-button type="primary">Profile</a-button>
+					<a-button type="primary" ghost>Logout</a-button>
 				</div>
 			</div>
 		</Container>
@@ -42,7 +47,7 @@ const onSearch = () => {};
 	justify-content: space-between;
 }
 
-.right-content{
+.right-content {
 	display: flex;
 	align-items: center;
 }
