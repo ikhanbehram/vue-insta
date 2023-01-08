@@ -4,11 +4,18 @@ import UserBar from './UserBar.vue';
 </script>
 
 <template>
-<Container>
-	<div class="profile-container">
-		<UserBar />
-	</div>
-</Container>
+	<Container>
+		<div class="profile-container">
+			<UserBar
+				username="Behram Khan"
+				:userInfo="{
+					posts: 4,
+					followers: 415,
+					following: 200
+				}"
+			/>
+		</div>
+	</Container>
 </template>
 
 <style scoped>

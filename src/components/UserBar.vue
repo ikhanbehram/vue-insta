@@ -1,12 +1,22 @@
+<script setup>
+import { defineProps } from 'vue';
+const { username, userInfo } = defineProps(['username', 'userInfo']);
+</script>
 <template>
 	<div class="userbar-container">
 		<div class="top-content">
-			<a-typography-title :level="2"></a-typography-title>
+			<a-typography-title :level="2">{{ username }}</a-typography-title>
 		</div>
 		<div class="bottom-content">
-			<a-typography-title :level="5">0 Posts</a-typography-title>
-			<a-typography-title :level="5">200 Followers</a-typography-title>
-			<a-typography-title :level="5">412 Following</a-typography-title>
+			<a-typography-title :level="5"
+				>{{ userInfo.posts }} Posts</a-typography-title
+			>
+			<a-typography-title :level="5"
+				>{{ userInfo.followers }} Followers</a-typography-title
+			>
+			<a-typography-title :level="5"
+				>{{ userInfo.following }} Following</a-typography-title
+			>
 		</div>
 	</div>
 </template>
