@@ -1,16 +1,28 @@
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref, reactive, defineProps } from 'vue';
+import { useUserStore } from '../stores/users';
+import {storeToRefs} from 'pinia';
+
+const userStore = useUserStore();
+
+const { errorMessage } = storeToRefs(userStore);
 
 const { isLogin } = defineProps(['isLogin']);
-
+const useCredentials = reactive({
+	email: '',
+	password: '',
+	usename: ''
+});
 const visible = ref(false);
 
 const showModal = () => {
 	visible.value = true;
 };
 
-const handleOk = (e) => {
-	visible.value = false;
+const handleOk = () => {
+	console.log(errorMessage);
+	userStore.handleSignup(useCredentials);
+	// visible.value = false;
 };
 
 const title = isLogin ? 'Login' : 'Signup';
@@ -18,11 +30,30 @@ const title = isLogin ? 'Login' : 'Signup';
 
 <template>
 	<div>
-		<a-button type="primary" class="btn" @click="showModal">{{ title }}</a-button>
+		<a-button type="primary" class="btn" @click="showModal">{{
+			title
+		}}</a-button>
 		<a-modal v-model:visible="visible" :title="title" @ok="handleOk">
-			<a-input class="input" v-if="!isLogin" v-model:value="value" placeholder="User Name" />
-			<a-input class="input" v-model:value="value" placeholder="Email" />
-			<a-input class="input" v-model:value="value" placeholder="Password" />
+			<a-input
+				class="input"
+				v-if="!isLogin"
+				v-model:value="useCredentials.usename"
+				placeholder="User Name"
+			/>
+			<a-input
+				class="input"
+				v-model:value="useCredentials.email"
+				placeholder="Email"
+			/>
+			<a-input
+				class="input"
+				v-model:value="useCredentials.password"
+				type="password"
+				placeholder="Password"
+			/>
+			<a-typography-text type="danger" v-if="errorMessage">{{
+				errorMessage
+			}}</a-typography-text>
 		</a-modal>
 	</div>
 </template>
