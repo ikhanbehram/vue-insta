@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, defineProps } from 'vue';
 import { useUserStore } from '../stores/users';
-import {storeToRefs} from 'pinia';
+import { storeToRefs } from 'pinia';
 
 const userStore = useUserStore();
 
@@ -11,7 +11,7 @@ const { isLogin } = defineProps(['isLogin']);
 const useCredentials = reactive({
 	email: '',
 	password: '',
-	usename: ''
+	username: ''
 });
 const visible = ref(false);
 
@@ -20,7 +20,6 @@ const showModal = () => {
 };
 
 const handleOk = () => {
-	console.log(errorMessage);
 	userStore.handleSignup(useCredentials);
 	// visible.value = false;
 };
@@ -37,7 +36,7 @@ const title = isLogin ? 'Login' : 'Signup';
 			<a-input
 				class="input"
 				v-if="!isLogin"
-				v-model:value="useCredentials.usename"
+				v-model:value="useCredentials.username"
 				placeholder="User Name"
 			/>
 			<a-input
