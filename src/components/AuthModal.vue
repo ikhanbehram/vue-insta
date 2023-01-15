@@ -37,7 +37,7 @@ const title = isLogin ? 'Login' : 'Signup';
 				class="input"
 				v-if="!isLogin"
 				v-model:value="useCredentials.username"
-				placeholder="User Name"
+				placeholder="User name"
 			/>
 			<a-input
 				class="input"
