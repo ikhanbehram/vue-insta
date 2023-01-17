@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import {supabase} from '../supabase';
+import { supabase } from '../supabase';
 
 const validateEmail = (email) => {
 	return String(email)
@@ -13,6 +13,7 @@ const validateEmail = (email) => {
 export const useUserStore = defineStore('users', () => {
 	const user = ref(null);
 	const errorMessage = ref('');
+	const loading = ref(false);
 
 	const handleLogin = () => {};
 	const handleSignup = async (creds) => {
@@ -28,22 +29,35 @@ export const useUserStore = defineStore('users', () => {
 		if (!validateEmail(email)) {
 			return (errorMessage.value = 'Not a valid email');
 		}
-		errorMessage.value = '';
+		loading.value = true;
 
+		const { data: userWithUsername } = await supabase
+			.from('users')
+			.select()
+			.eq('username', username)
+			.single();
 
-		const {error} = await supabase.auth.signUp({
+		if (userWithUsername) {
+			loading.value = false;
+			return errorMessage.value = "User already resgistered";
+		}
+		const { error } = await supabase.auth.signUp({
 			email,
 			password
 		});
-
+		
 		if (error) {
-			return errorMessage.value = error.message
+			loading.value = false;
+			return (errorMessage.value = error.message);
 		}
-
-		await supabase.from("users").insert({
+		
+		await supabase.from('users').insert({
 			username,
 			email
 		});
+		
+		loading.value = false;
+		errorMessage.value = '';
 	};
 	const handleLogout = () => {};
 	const getUser = () => {};
@@ -51,6 +65,7 @@ export const useUserStore = defineStore('users', () => {
 	return {
 		user,
 		errorMessage,
+		loading,
 		handleLogin,
 		handleSignup,
 		handleLogout,

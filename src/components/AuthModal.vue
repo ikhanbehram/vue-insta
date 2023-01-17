@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia';
 
 const userStore = useUserStore();
 
-const { errorMessage } = storeToRefs(userStore);
+const { errorMessage, loading } = storeToRefs(userStore);
 
 const { isLogin } = defineProps(['isLogin']);
 const useCredentials = reactive({
@@ -23,6 +23,9 @@ const handleOk = () => {
 	userStore.handleSignup(useCredentials);
 	// visible.value = false;
 };
+const handleCancel = () => {
+	visible.value = false;
+};
 
 const title = isLogin ? 'Login' : 'Signup';
 </script>
@@ -32,24 +35,40 @@ const title = isLogin ? 'Login' : 'Signup';
 		<a-button type="primary" class="btn" @click="showModal">{{
 			title
 		}}</a-button>
-		<a-modal v-model:visible="visible" :title="title" @ok="handleOk">
-			<a-input
-				class="input"
-				v-if="!isLogin"
-				v-model:value="useCredentials.username"
-				placeholder="User name"
-			/>
-			<a-input
-				class="input"
-				v-model:value="useCredentials.email"
-				placeholder="Email"
-			/>
-			<a-input
-				class="input"
-				v-model:value="useCredentials.password"
-				type="password"
-				placeholder="Password"
-			/>
+		<a-modal v-model:visible="visible" :title="title">
+			<template #footer>
+				<a-button key="back" @click="handleCancel">Cancel</a-button>
+				<a-button
+					key="submit"
+					type="primary"
+					:loading="loading"
+					@click="handleOk"
+					:disabled="loading"
+					>Submit</a-button
+				>
+			</template>
+			<div>
+				<a-input
+					class="input"
+					v-if="!isLogin"
+					v-model:value="useCredentials.username"
+					placeholder="User name"
+					:disabled="loading"
+				/>
+				<a-input
+					class="input"
+					v-model:value="useCredentials.email"
+					placeholder="Email"
+					:disabled="loading"
+				/>
+				<a-input
+					class="input"
+					v-model:value="useCredentials.password"
+					type="password"
+					placeholder="Password"
+					:disabled="loading"
+				/>
+			</div>
 			<a-typography-text type="danger" v-if="errorMessage">{{
 				errorMessage
 			}}</a-typography-text>
