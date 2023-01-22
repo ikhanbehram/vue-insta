@@ -27,8 +27,16 @@ const showModal = () => {
 };
 
 const handleOk = async () => {
-  await userStore.handleSignup(useCredentials);
-if (user.value) {
+  if (isLogin) {
+    console.log("HERE");
+    await userStore.handleLogin({
+      password: useCredentials.password,
+      email: useCredentials.email
+    });
+  } else {
+    await userStore.handleSignup(useCredentials);
+  }
+  if (user.value) {
     visible.value = false;
     clearUserInputs();
   }

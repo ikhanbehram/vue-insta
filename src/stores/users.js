@@ -15,7 +15,37 @@ export const useUserStore = defineStore("users", () => {
   const errorMessage = ref("");
   const loading = ref(false);
 
-  const handleLogin = () => {};
+  const handleLogin = async (creds) => {
+    const { email, password } = creds;
+    if (!validateEmail(email)) {
+      return (errorMessage.value = "Not a valid email");
+    }
+    if (!password.length) {
+      return (errorMessage.value = "Password is required field");
+    }
+    loading.value = true;
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      loading.value = false;
+      return (errorMessage.value = error.message);
+    }
+
+    const { data: currentUser } = await supabase
+      .from("users")
+      .select()
+      .eq("username", username)
+      .single();
+    user.value = {
+      email: currentUser.email,
+      username: currentUser.username,
+      id: currentUser.id,
+    };
+  };
   const handleSignup = async (creds) => {
     const { email, password, username } = creds;
 
@@ -61,7 +91,7 @@ export const useUserStore = defineStore("users", () => {
       .select()
       .eq("username", username)
       .single();
-console.log(newUser);
+
     user.value = {
       id: newUser.id,
       email: newUser.email,
@@ -69,6 +99,7 @@ console.log(newUser);
     };
 
     loading.value = false;
+    clearErrorMessage();
   };
   const handleLogout = () => {};
   const getUser = () => {};
@@ -86,6 +117,6 @@ console.log(newUser);
     handleSignup,
     handleLogout,
     getUser,
-	clearErrorMessage
+    clearErrorMessage,
   };
 });
