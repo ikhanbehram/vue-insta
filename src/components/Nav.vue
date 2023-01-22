@@ -16,6 +16,9 @@ const onSearch = () => {
     searchUserName.value = "";
   }
 };
+const onLogout = async () => {
+	await userStore.handleLogout();
+};
 </script>
 
 <template>
@@ -38,7 +41,7 @@ const onSearch = () => {
           </div>
           <div class="left-content" v-else>
             <a-button type="primary">Profile</a-button>
-            <a-button type="primary" ghost>Logout</a-button>
+            <a-button type="primary" ghost @click="onLogout">Logout</a-button>
           </div>
         </div>
       </div>
