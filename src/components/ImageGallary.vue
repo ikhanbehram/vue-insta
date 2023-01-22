@@ -6,7 +6,7 @@ const { posts } = defineProps(['posts']);
 
 <template>
 	<div class="image-gallary-container">
-		<img v-for="post in posts" :key="post.id" :src="post.image" />
+		<img v-for="post in posts" :key="post.id" :src="`https://onqqpyosjvdlzemvqqel.supabase.co/storage/v1/object/public/images/${post.url}`" />
 	</div>
 </template>
 

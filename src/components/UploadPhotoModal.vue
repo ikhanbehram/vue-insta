@@ -1,12 +1,14 @@
 <script setup>
 import { supabase } from "../supabase";
-import { ref } from "vue";
+import { ref, defineProps } from "vue";
 import { useUserStore } from "../stores/users";
 import { storeToRefs } from "pinia";
 
 const userStore = useUserStore();
 
 const { user } = storeToRefs(userStore);
+
+const { addNewPost } = defineProps(["addNewPost"]);
 
 const visible = ref(false);
 const caption = ref("");
@@ -23,6 +25,7 @@ const handleOk = async () => {
   const fileName = Math.floor(
     Math.random() * 100000000000000000000000000000000000
   );
+  let filePath;
   if (file.value) {
     const { data, error } = await supabase.storage
       .from("images")
@@ -31,8 +34,9 @@ const handleOk = async () => {
       loading.value = false;
       return (errorMsg.value = "Unable to upload photo");
     }
+    filePath = data.path;
     await supabase.from("posts").insert({
-      url: data.path,
+      url: filePath,
       caption: caption.value,
       fk_user_id: user.value.id,
     });
@@ -40,6 +44,11 @@ const handleOk = async () => {
   loading.value = false;
   visible.value = false;
   caption.value = "";
+  addNewPost({
+    url: filePath,
+    caption: caption.value,
+    fk_user_id: user.value.id,
+  });
 };
 
 const handleChange = (e) => {

@@ -12,13 +12,13 @@ const {user} = storeToRefs(userStore);
 
 const {username: profileUsername} = route.params;
 
-const { username, userInfo } = defineProps(['username', 'userInfo']);
+const { username, userInfo, addNewPost } = defineProps(['username', 'userInfo', 'addNewPost']);
 </script>
 <template>
 	<div class="userbar-container">
 		<div class="top-content">
 			<a-typography-title :level="2">{{ username }}</a-typography-title>
-			<UploadPhotoModal v-if="user && profileUsername === user.username"/>
+			<UploadPhotoModal v-if="user && profileUsername === user.username" :addNewPost="addNewPost"/>
 		</div>
 		<div class="bottom-content">
 			<a-typography-title :level="5"
