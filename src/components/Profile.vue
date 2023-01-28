@@ -7,6 +7,7 @@ import { supabase } from "../supabase";
 import { useRoute } from "vue-router";
 import { useUserStore } from "../stores/users";
 import { storeToRefs } from "pinia";
+import { watch } from "fs";
 
 const posts = ref([]);
 const user = ref(null);
@@ -61,6 +62,10 @@ const fetchIsFollowing = async () => {
     }
   }
 };
+
+watch(currentUser, ()=>{
+  fetchIsFollowing()
+});
 
 onMounted(() => {
   fetchData();
