@@ -2,12 +2,11 @@
 import Container from "../layouts/Container.vue";
 import ImageGallary from "./ImageGallary.vue";
 import UserBar from "./UserBar.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { supabase } from "../supabase";
 import { useRoute } from "vue-router";
 import { useUserStore } from "../stores/users";
 import { storeToRefs } from "pinia";
-import { watch } from "fs";
 
 const posts = ref([]);
 const user = ref(null);

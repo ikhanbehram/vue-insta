@@ -18,10 +18,7 @@ const followUser = async () => {
   });
 };
 const unFollowUser = async () => {
-  await supabase.from("followers_following").delete({
-    fk_follower_id: currentUser.value.id,
-    fk_following_id: user.id,
-  });
+  await supabase.from("followers_following").delete().eq("fk_follower_id", currentUser.value.id).eq("fk_following_id", user.id);
 };
 </script>
 <template>
@@ -35,7 +32,7 @@ const unFollowUser = async () => {
         />
         <div v-else>
           <a-button @click="followUser" v-if="!isFollowing">Follow</a-button>
-          <a-button @click="unFollowUser" ghost v-else>Following</a-button>
+          <a-button @click="unFollowUser" type="primary" v-else>Following</a-button>
         </div>
       </div>
     </div>
