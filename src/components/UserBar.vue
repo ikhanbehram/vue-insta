@@ -9,13 +9,19 @@ const userStore = useUserStore();
 
 const { user: currentUser } = storeToRefs(userStore);
 
-const { user, addNewPost } = defineProps(["user", "addNewPost"]);
+const { user, addNewPost } = defineProps(["user", "addNewPost", "isFollowing"]);
 
 const followUser = async () => {
-await supabase.from("followers_following").insert({
-	follower_id: currentUser.value.id,
-	following_id: user.id
-})
+  await supabase.from("followers_following").insert({
+    fk_follower_id: currentUser.value.id,
+    fk_following_id: user.id,
+  });
+};
+const unFollowUser = async () => {
+  await supabase.from("followers_following").delete({
+    fk_follower_id: currentUser.value.id,
+    fk_following_id: user.id,
+  });
 };
 </script>
 <template>
@@ -27,7 +33,10 @@ await supabase.from("followers_following").insert({
           v-if="currentUser.username === user.username"
           :addNewPost="addNewPost"
         />
-        <a-button v-else @click="followUser">Follow</a-button>
+        <div v-else>
+          <a-button @click="followUser" v-if="!isFollowing">Follow</a-button>
+          <a-button @click="unFollowUser" ghost v-else>Following</a-button>
+        </div>
       </div>
     </div>
     <!-- <div class="bottom-content">

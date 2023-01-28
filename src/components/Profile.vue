@@ -5,14 +5,19 @@ import UserBar from "./UserBar.vue";
 import { ref, onMounted } from "vue";
 import { supabase } from "../supabase";
 import { useRoute } from "vue-router";
+import { useUserStore } from "../stores/users";
+import { storeToRefs } from "pinia";
 
 const posts = ref([]);
 const user = ref(null);
+const isFollowing = ref(false);
 const loading = ref(false);
 
 const route = useRoute();
 
 const { username } = route.params;
+const userStore = useUserStore();
+const { user: currentUser } = storeToRefs(userStore);
 
 const addNewPost = (post) => {
   posts.value.unshift(post);
@@ -35,10 +40,26 @@ const fetchData = async () => {
   const { data: postsData } = await supabase
     .from("posts")
     .select()
-    .eq('fk_user_id', user.value.id);
+    .eq("fk_user_id", user.value.id);
 
   posts.value = postsData;
+  await fetchIsFollowing();
   loading.value = false;
+};
+
+const fetchIsFollowing = async () => {
+  if (currentUser.value && currentUser.value.id !== user.value.id) {
+    const { data } = await supabase
+      .from("followers_following")
+      .select()
+      .eq("fk_follower_id", currentUser.value.id)
+      .eq("fk_following_id", user.value.id)
+      .single();
+
+    if (data) {
+      return (isFollowing.value = true);
+    }
+  }
 };
 
 onMounted(() => {
@@ -49,7 +70,7 @@ onMounted(() => {
 <template>
   <Container>
     <div class="profile-container" v-if="!loading">
-      <UserBar :key="username" :user="user" :addNewPost="addNewPost" />
+      <UserBar :key="username" :user="user" :addNewPost="addNewPost" :isFollowing="isFollowing"/>
       <ImageGallary :posts="posts" />
     </div>
 
