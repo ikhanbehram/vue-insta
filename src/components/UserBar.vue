@@ -9,16 +9,28 @@ const userStore = useUserStore();
 
 const { user: currentUser } = storeToRefs(userStore);
 
-const { user, addNewPost } = defineProps(["user", "addNewPost", "isFollowing"]);
+const { user, userInfo, addNewPost, updateIsFollowing } = defineProps([
+  "user",
+  "userInfo",
+  "addNewPost",
+  "isFollowing",
+  "updateIsFollowing",
+]);
 
 const followUser = async () => {
+  updateIsFollowing(true);
   await supabase.from("followers_following").insert({
     fk_follower_id: currentUser.value.id,
     fk_following_id: user.id,
   });
 };
 const unFollowUser = async () => {
-  await supabase.from("followers_following").delete().eq("fk_follower_id", currentUser.value.id).eq("fk_following_id", user.id);
+  updateIsFollowing(false);
+  await supabase
+    .from("followers_following")
+    .delete()
+    .eq("fk_follower_id", currentUser.value.id)
+    .eq("fk_following_id", user.id);
 };
 </script>
 <template>
@@ -32,21 +44,23 @@ const unFollowUser = async () => {
         />
         <div v-else>
           <a-button @click="followUser" v-if="!isFollowing">Follow</a-button>
-          <a-button @click="unFollowUser" type="primary" v-else>Following</a-button>
+          <a-button @click="unFollowUser" type="primary" v-else
+            >Following</a-button
+          >
         </div>
       </div>
     </div>
-    <!-- <div class="bottom-content">
+    <div class="bottom-content">
 			<a-typography-title :level="5"
-				>{{ user.posts }} Posts</a-typography-title
+				>{{ userInfo.posts }} Posts</a-typography-title
 			>
 			<a-typography-title :level="5"
-				>{{ user.followers }} Followers</a-typography-title
+				>{{ userInfo.followers }} Followers</a-typography-title
 			>
 			<a-typography-title :level="5"
-				>{{ user.following }} Following</a-typography-title
+				>{{ userInfo.following }} Following</a-typography-title
 			>
-		</div> -->
+		</div>
   </div>
 
   <div class="userbar-container" v-else>

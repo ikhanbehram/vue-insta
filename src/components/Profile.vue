@@ -2,7 +2,7 @@
 import Container from "../layouts/Container.vue";
 import ImageGallary from "./ImageGallary.vue";
 import UserBar from "./UserBar.vue";
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, reactive } from "vue";
 import { supabase } from "../supabase";
 import { useRoute } from "vue-router";
 import { useUserStore } from "../stores/users";
@@ -12,6 +12,11 @@ const posts = ref([]);
 const user = ref(null);
 const isFollowing = ref(false);
 const loading = ref(false);
+const userInfo = reactive({
+  posts: null,
+  followers: null,
+  following: null,
+});
 
 const route = useRoute();
 
@@ -21,6 +26,10 @@ const { user: currentUser } = storeToRefs(userStore);
 
 const addNewPost = (post) => {
   posts.value.unshift(post);
+};
+
+const updateIsFollowing = (follow) => {
+  isFollowing.value = follow;
 };
 
 const fetchData = async () => {
@@ -44,7 +53,29 @@ const fetchData = async () => {
 
   posts.value = postsData;
   await fetchIsFollowing();
+  const followersCount = await fetchFollowersCount();
+  const followingCount = await fetchFollowingCount();
+
+  userInfo.followers = followersCount;
+  userInfo.following = followingCount;
+  userInfo.posts = posts.value.length;
   loading.value = false;
+};
+
+const fetchFollowersCount = async () => {
+  const { count } = await supabase
+    .from("followers_following")
+    .select("*", { count: "exact" })
+    .eq("fk_following_id", user.value.id);
+  return count;
+};
+
+const fetchFollowingCount = async () => {
+  const { count } = await supabase
+    .from("followers_following")
+    .select("*", { count: "exact" })
+    .eq("fk_follower_id", user.value.id);
+  return count;
 };
 
 const fetchIsFollowing = async () => {
@@ -62,8 +93,8 @@ const fetchIsFollowing = async () => {
   }
 };
 
-watch(currentUser, ()=>{
-  fetchIsFollowing()
+watch(currentUser, () => {
+  fetchIsFollowing();
 });
 
 onMounted(() => {
@@ -74,7 +105,14 @@ onMounted(() => {
 <template>
   <Container>
     <div class="profile-container" v-if="!loading">
-      <UserBar :key="username" :user="user" :addNewPost="addNewPost" :isFollowing="isFollowing"/>
+      <UserBar
+        :key="username"
+        :user="user"
+        :userInfo="userInfo"
+        :addNewPost="addNewPost"
+        :isFollowing="isFollowing"
+        :updateIsFollowing="updateIsFollowing"
+      />
       <ImageGallary :posts="posts" />
     </div>
 
