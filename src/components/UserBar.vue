@@ -10,26 +10,31 @@ const userStore = useUserStore();
 
 const {user} = storeToRefs(userStore);
 
-const {username: profileUsername} = route.params;
-
-const { username, userInfo, addNewPost } = defineProps(['username', 'userInfo', 'addNewPost']);
+const { user: propUser, addNewPost } = defineProps(['user', 'addNewPost']);
 </script>
 <template>
-	<div class="userbar-container">
+	<div class="userbar-container" v-if="propUser">
 		<div class="top-content">
-			<a-typography-title :level="2">{{ username }}</a-typography-title>
-			<UploadPhotoModal v-if="user && profileUsername === user.username" :addNewPost="addNewPost"/>
+			<a-typography-title :level="2">{{ propUser.username }}</a-typography-title>
+			<UploadPhotoModal v-if="user && propUser.username === user.username" :addNewPost="addNewPost"/>
 		</div>
 		<div class="bottom-content">
 			<a-typography-title :level="5"
-				>{{ userInfo.posts }} Posts</a-typography-title
+				>{{ user.posts }} Posts</a-typography-title
 			>
 			<a-typography-title :level="5"
-				>{{ userInfo.followers }} Followers</a-typography-title
+				>{{ user.followers }} Followers</a-typography-title
 			>
 			<a-typography-title :level="5"
-				>{{ userInfo.following }} Following</a-typography-title
+				>{{ user.following }} Following</a-typography-title
 			>
+		</div>
+	</div>
+
+	<div class="userbar-container" v-else>
+		<div class="top-content">
+			<a-typography-title :level="2">user not found</a-typography-title>
+			
 		</div>
 	</div>
 </template>
