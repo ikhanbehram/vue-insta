@@ -3,12 +3,20 @@ import { defineProps } from "vue";
 import UploadPhotoModal from "./UploadPhotoModal.vue";
 import { useUserStore } from "../stores/users";
 import { storeToRefs } from "pinia";
+import { supabase } from "../supabase";
 
 const userStore = useUserStore();
 
 const { user: currentUser } = storeToRefs(userStore);
 
 const { user, addNewPost } = defineProps(["user", "addNewPost"]);
+
+const followUser = async () => {
+await supabase.from("followers_following").insert({
+	follower_id: currentUser.value.id,
+	following_id: user.id
+})
+};
 </script>
 <template>
   <div class="userbar-container" v-if="user">
@@ -19,7 +27,7 @@ const { user, addNewPost } = defineProps(["user", "addNewPost"]);
           v-if="currentUser.username === user.username"
           :addNewPost="addNewPost"
         />
-        <a-button v-else>Follow</a-button>
+        <a-button v-else @click="followUser">Follow</a-button>
       </div>
     </div>
     <!-- <div class="bottom-content">
